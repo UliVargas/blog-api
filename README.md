@@ -29,9 +29,11 @@ blog-go/
 ## 📁 Descripción de Carpetas
 
 ### `/cmd/api/`
+
 Contiene el punto de entrada principal de la aplicación. Aquí se inicializa el servidor HTTP, se configuran las rutas y se conectan todas las capas de la aplicación.
 
 ### `/internal/`
+
 Código interno de la aplicación que no debe ser importado por otros proyectos:
 
 - **`config/`**: Manejo de configuración de la aplicación (variables de entorno, configuración de base de datos, etc.)
@@ -42,9 +44,11 @@ Código interno de la aplicación que no debe ser importado por otros proyectos:
 - **`service/`**: Lógica de negocio y casos de uso de la aplicación
 
 ### `/migrations/`
+
 Scripts SQL para migración y versionado de la base de datos. Permite mantener un historial de cambios en el esquema de la base de datos.
 
 ### `/pkg/`
+
 Paquetes y utilidades que pueden ser reutilizados por otros proyectos. Código que no es específico de este dominio de negocio.
 
 ## 🛠️ Tecnologías Utilizadas
@@ -68,21 +72,25 @@ El proyecto incluye un `docker-compose.yml` que proporciona:
 - **Puerto 5432**: Expuesto para conexión local
 
 ## ⚙️ Configuración
+
 "
+
 ### Variables de Entorno
 
 1. Copia el archivo de ejemplo:
+
 ```bash
 cp .env.example .env
 ```
 
 2. Configura las variables en `.env`:
+
 ```env
 # Cadena de conexión a PostgreSQL
-DB_DSN="host=localhost user=postgres password=postgres dbname=blog_db port=5432 sslmode=disable"
+DBDSN="host=localhost user=postgres password=postgres dbname=blog_db port=5432 sslmode=disable"
 
 # Clave secreta para JWT (usa una clave segura en producción)
-JWT_SECRET="your-super-secret-key-here"
+JWTSECRET="your-super-secret-key-here"
 
 # Puerto del servidor
 PORT=":8080"
@@ -112,6 +120,7 @@ Este proyecto implementa los principios de **Clean Architecture**:
 4. **Capa de Dominio** (`models/`): Entidades y reglas de negocio
 
 Esta estructura permite:
+
 - **Separación de responsabilidades**
 - **Facilidad de testing**
 - **Mantenibilidad**
@@ -129,33 +138,39 @@ Esta estructura permite:
 ### Pasos de Instalación
 
 1. **Clona el repositorio:**
+
 ```bash
 git clone https://github.com/UliVargas/blog-go.git
 cd blog-go
 ```
 
 2. **Instala las dependencias:**
+
 ```bash
 go mod download
 ```
 
 3. **Configura las variables de entorno:**
+
 ```bash
 cp .env.example .env
 # Edita .env con tus configuraciones
 ```
 
 4. **Levanta la base de datos (con Docker):**
+
 ```bash
 docker-compose up -d
 ```
 
 5. **Ejecuta las migraciones:**
+
 ```bash
 # Aquí irían los comandos de migración cuando estén implementados
 ```
 
 6. **Ejecuta la aplicación:**
+
 ```bash
 go run cmd/api/main.go
 ```
@@ -195,6 +210,7 @@ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/api cmd/api/main.
 ## 📝 Estado del Proyecto
 
 ### ✅ Completado
+
 - [x] Estructura de proyecto con Clean Architecture
 - [x] Configuración de dependencias (go.mod)
 - [x] Configuración de Docker para desarrollo
@@ -202,6 +218,7 @@ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/api cmd/api/main.
 - [x] Gitignore configurado
 
 ### 🚧 En Desarrollo
+
 - [ ] Implementación de handlers HTTP
 - [ ] Modelos de datos y entidades
 - [ ] Repositorios y acceso a datos
@@ -210,4 +227,5 @@ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/api cmd/api/main.
 - [ ] Migraciones de base de datos
 - [ ] Tests unitarios
 - [ ] Documentación de API
+
 7. Implementar el punto de entrada en `/cmd/api/main.go`
