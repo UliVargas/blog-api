@@ -2,14 +2,14 @@ package service
 
 import (
 	"github.com/UliVargas/blog-go/internal/domain/model"
-	"github.com/UliVargas/blog-go/internal/infrastructure/repository"
+	"github.com/UliVargas/blog-go/internal/domain/repository"
 )
 
 type UserService struct {
-	userRepo *repository.UserRepository
+	userRepo repository.UserRepositoryInterface
 }
 
-func NewUserService(userRepo *repository.UserRepository) *UserService {
+func NewUserService(userRepo repository.UserRepositoryInterface) *UserService {
 	return &UserService{userRepo}
 }
 

@@ -5,12 +5,13 @@ import (
 
 	services "github.com/UliVargas/blog-go/internal/application/service"
 	"github.com/UliVargas/blog-go/internal/domain/dto"
+	domainService "github.com/UliVargas/blog-go/internal/domain/service"
 	"github.com/UliVargas/blog-go/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler struct {
-	authService *services.AuthService
+	authService domainService.AuthServiceInterface
 }
 
 func NewAuthHandler(authService *services.AuthService) *AuthHandler {

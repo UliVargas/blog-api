@@ -10,6 +10,9 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+coverage.out
+coverage.html
+coverage_detailed.html
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -109,3 +112,32 @@ docs/_build/
 
 # Go module cache
 go.sum.backup
+
+# Binary output
+/blog-api
+/cmd/api/api
+/bin/
+
+# Air live reload
+.air.toml
+
+# JWT secrets and API keys
+*.secret
+
+# Database migrations (if auto-generated)
+# *.sql
+
+# Test coverage reports
+*.cover
+*.coverprofile
+
+# Go workspace
+*.work
+*.work.sum
+
+# Vendor directory (uncomment if using)
+# vendor/
+
+# Local configuration overrides
+config.local.*
+.env.override

@@ -6,17 +6,17 @@ import (
 
 	"github.com/UliVargas/blog-go/internal/domain/model"
 	"github.com/UliVargas/blog-go/internal/infrastructure/config"
-	"github.com/UliVargas/blog-go/internal/infrastructure/repository"
+	"github.com/UliVargas/blog-go/internal/domain/repository"
 	appErrors "github.com/UliVargas/blog-go/pkg/errors"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
-	userRepo *repository.UserRepository
+	userRepo repository.UserRepositoryInterface
 }
 
-func NewAuthService(userRepo *repository.UserRepository) *AuthService {
+func NewAuthService(userRepo repository.UserRepositoryInterface) *AuthService {
 	return &AuthService{userRepo}
 }
 

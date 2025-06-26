@@ -5,13 +5,14 @@ import (
 	"strconv"
 
 	services "github.com/UliVargas/blog-go/internal/application/service"
+	domainService "github.com/UliVargas/blog-go/internal/domain/service"
 	appErrors "github.com/UliVargas/blog-go/pkg/errors"
 	"github.com/UliVargas/blog-go/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	userService *services.UserService
+	userService domainService.UserServiceInterface
 }
 
 func NewUserHandler(userService *services.UserService) *UserHandler {
