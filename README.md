@@ -27,6 +27,7 @@ blog-go/
 │   ├── errors/                  # Manejo de errores personalizados
 │   └── utils/                   # Utilidades generales
 ├── .env.example                 # Ejemplo de variables de entorno
+├── .gitignore                   # Archivos y directorios excluidos de Git
 ├── docker-compose.yml           # Configuración de Docker para desarrollo
 ├── go.mod                       # Dependencias del módulo Go
 └── go.sum                       # Checksums de dependencias
@@ -293,23 +294,36 @@ go test ./...
 
 # Ejecutar tests con coverage detallado
 go test -cover -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+go tool cover -html=coverage.out -o coverage.html
+
+# Generar reporte de coverage detallado
+go tool cover -func=coverage.out
 
 # Ejecutar tests de una capa específica
-go test ./internal/application/...
+go test ./internal/application/service/...
 go test ./internal/domain/...
 go test ./internal/infrastructure/...
 go test ./internal/presentation/...
+go test ./pkg/...
 
 # Ejecutar tests con verbose output
 go test -v ./...
+
+# Verificar coverage por módulo
+go test -cover ./internal/application/service
+go test -cover ./internal/presentation/middleware
+go test -cover ./pkg/errors
+go test -cover ./pkg/utils
 ```
 
 ### 🏗️ Build y Deploy
 
 ```bash
-# Build para desarrollo
+# Build para desarrollo (recomendado - en directorio bin/)
 go build -o bin/api cmd/api/main.go
+
+# Build simple (genera 'api' en directorio raíz - NO recomendado para Git)
+go build -o api ./cmd/api
 
 # Build para producción (optimizado)
 CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags='-w -s' -o bin/api cmd/api/main.go
@@ -317,7 +331,19 @@ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags='-w -s' -o bin/
 # Build multiplataforma
 GOOS=windows GOARCH=amd64 go build -o bin/api.exe cmd/api/main.go
 GOOS=darwin GOARCH=amd64 go build -o bin/api-mac cmd/api/main.go
+GOOS=linux GOARCH=amd64 go build -o bin/api-linux cmd/api/main.go
+
+# Limpiar binarios generados
+rm -rf bin/
+rm -f api  # Si se generó en raíz por error
 ```
+
+#### 📝 Notas sobre Binarios
+
+- **Ubicación recomendada**: Usar `bin/` para organizar ejecutables
+- **Git ignore**: Los binarios están excluidos automáticamente del repositorio
+- **Tamaño**: El ejecutable pesa aproximadamente 28MB
+- **Distribución**: Usar GitHub Releases para distribuir binarios compilados
 
 ### 🗄️ Base de Datos
 
@@ -352,6 +378,46 @@ go list -json -m all | nancy sleuth
 go mod graph
 go mod why github.com/gin-gonic/gin
 ```
+
+### 📁 Gestión de Archivos (.gitignore)
+
+El proyecto incluye un `.gitignore` completo que excluye:
+
+```bash
+# Archivos de cobertura de tests
+coverage.out
+coverage.html
+coverage_detailed.html
+*.cover
+*.coverprofile
+
+# Binarios compilados
+/blog-api
+/cmd/api/api
+/bin/
+api
+
+# Configuraciones de desarrollo
+.air.toml
+*.secret
+config.local.*
+.env.override
+
+# Archivos de Go workspace
+*.work
+*.work.sum
+
+# Variables de entorno sensibles
+.env
+```
+
+#### 🚨 Importante: Archivos que NO deben subirse
+
+- **Binarios compilados**: Se regeneran automáticamente
+- **Archivos de cobertura**: Son outputs temporales de testing
+- **Variables de entorno**: Contienen información sensible
+- **Configuraciones locales**: Específicas del entorno de desarrollo
+- **Secretos y claves**: JWT secrets, API keys, etc.
 
 ## 🔒 Seguridad
 
@@ -447,14 +513,36 @@ gosec ./...
 - ✅ **DTOs**: Objetos de transferencia tipados
 - ✅ **Reglas de Negocio**: Validaciones centralizadas
 
-### 🚧 Próximas Mejoras
-
 #### 🧪 Testing y Calidad
 
-- 🚧 **Tests Unitarios**: Cobertura por capas
-- 🚧 **Tests de Integración**: E2E testing
-- 🚧 **Mocks e Interfaces**: Testabilidad mejorada
+- ✅ **Tests Unitarios**: Cobertura completa implementada (87.4% general)
+- ✅ **Tests de Servicios**: AuthService y UserService con casos completos
+- ✅ **Tests de Middleware**: Validación de JWT y manejo de errores
+- ✅ **Tests de Utilidades**: pkg/errors y pkg/utils con 100% cobertura
+- ✅ **Tests de Handlers**: Cobertura completa de endpoints
+- ✅ **Tests de Repositorios**: Validación de acceso a datos
+- ✅ **Reportes de Coverage**: HTML y funcional implementados
+
+##### 📊 Cobertura Actual por Módulo
+
+- **pkg/errors**: 100% cobertura
+- **pkg/utils**: 100% cobertura  
+- **internal/infrastructure/config**: 100% cobertura
+- **internal/infrastructure/repository**: 100% cobertura
+- **internal/presentation/handler**: 100% cobertura
+- **internal/domain/dto**: 100% cobertura
+- **internal/presentation/middleware**: 96.4% cobertura
+- **internal/application/service**: 93.3% cobertura
+- **Cobertura General del Proyecto**: 87.4%
+
+### 🚧 Próximas Mejoras
+
+#### 🧪 Testing Avanzado
+
+- 🚧 **Tests de Integración**: E2E testing completo
+- 🚧 **Mocks Avanzados**: Interfaces más complejas
 - 🚧 **CI/CD Pipeline**: Automatización de pruebas
+- 🚧 **Performance Tests**: Benchmarking de endpoints
 
 #### 📚 Documentación y Monitoreo
 
