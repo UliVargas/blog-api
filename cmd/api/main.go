@@ -3,12 +3,12 @@ package main
 import (
 	"log"
 
-	"github.com/UliVargas/blog-go/internal/config"
-	"github.com/UliVargas/blog-go/internal/handlers"
-	"github.com/UliVargas/blog-go/internal/middleware"
-	"github.com/UliVargas/blog-go/internal/models"
-	"github.com/UliVargas/blog-go/internal/repository"
-	"github.com/UliVargas/blog-go/internal/service"
+	"github.com/UliVargas/blog-go/internal/application/service"
+	"github.com/UliVargas/blog-go/internal/domain/model"
+	"github.com/UliVargas/blog-go/internal/infrastructure/config"
+	"github.com/UliVargas/blog-go/internal/infrastructure/repository"
+	"github.com/UliVargas/blog-go/internal/presentation/handler"
+	"github.com/UliVargas/blog-go/internal/presentation/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -22,15 +22,15 @@ func main() {
 
 	// Inicialización de la base de datos
 	db := config.DBConnect()
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&model.User{})
 
 	// Inicialización de servicios
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
-	userHandler := handlers.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService)
 
 	authService := service.NewAuthService(userRepository)
-	authHandler := handlers.NewAuthHandler(authService)
+	authHandler := handler.NewAuthHandler(authService)
 
 	// Inicialización de router
 	router := gin.Default()
@@ -38,13 +38,6 @@ func main() {
 	// Rutas de usuarios
 	api := router.Group("/api/v1")
 	{
-		// Rutas públicas de usuarios
-		users := api.Group("/users")
-		{
-			// Ruta pública para crear usuario (registro)
-			users.POST("/", userHandler.Create)
-		}
-
 		// Rutas protegidas de usuarios
 		protectedUsers := api.Group("/users")
 		protectedUsers.Use(middleware.AuthMiddleware())
@@ -57,6 +50,7 @@ func main() {
 		auth := api.Group("/auth")
 		{
 			auth.POST("/login", authHandler.Login)
+			auth.POST("/register", authHandler.Register)
 		}
 	}
 

@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/UliVargas/blog-go/internal/config"
-	"github.com/UliVargas/blog-go/internal/repository"
+	"github.com/UliVargas/blog-go/internal/domain/model"
+	"github.com/UliVargas/blog-go/internal/infrastructure/config"
+	"github.com/UliVargas/blog-go/internal/infrastructure/repository"
 	appErrors "github.com/UliVargas/blog-go/pkg/errors"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -50,4 +51,27 @@ func (s *AuthService) Login(email, password string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func (s *AuthService) Register(user model.User) error {
+	// Verificar si el usuario ya existe
+	existingUser, err := s.userRepo.GetByEmail(user.Email)
+	if err != nil && !errors.Is(err, appErrors.ErrUserNotFound) {
+		// Error inesperado al consultar la base de datos
+		return err
+	}
+	if existingUser.ID != 0 {
+		// El usuario ya existe
+		return appErrors.ErrEmailExists
+	}
+
+	// Hashear la contraseña
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return appErrors.NewInternalServerError(err, "Error al procesar la contraseña")
+	}
+	user.Password = string(hashedPassword)
+
+	// Crear el usuario
+	return s.userRepo.Create(user)
 }
