@@ -5,6 +5,7 @@ import (
 
 	"github.com/UliVargas/blog-go/internal/config"
 	"github.com/UliVargas/blog-go/internal/handlers"
+	"github.com/UliVargas/blog-go/internal/middleware"
 	"github.com/UliVargas/blog-go/internal/models"
 	"github.com/UliVargas/blog-go/internal/repository"
 	"github.com/UliVargas/blog-go/internal/service"
@@ -28,17 +29,34 @@ func main() {
 	userService := service.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService)
 
+	authService := service.NewAuthService(userRepository)
+	authHandler := handlers.NewAuthHandler(authService)
+
 	// Inicialización de router
 	router := gin.Default()
 
 	// Rutas de usuarios
 	api := router.Group("/api/v1")
 	{
+		// Rutas públicas de usuarios
 		users := api.Group("/users")
 		{
-			users.GET("/", userHandler.GetAll)
-			users.GET("/:id", userHandler.GetByID)
+			// Ruta pública para crear usuario (registro)
 			users.POST("/", userHandler.Create)
+		}
+
+		// Rutas protegidas de usuarios
+		protectedUsers := api.Group("/users")
+		protectedUsers.Use(middleware.AuthMiddleware())
+		{
+			protectedUsers.GET("/", userHandler.GetAll)
+			protectedUsers.GET("/:id", userHandler.GetByID)
+		}
+
+		// Rutas de autenticación
+		auth := api.Group("/auth")
+		{
+			auth.POST("/login", authHandler.Login)
 		}
 	}
 

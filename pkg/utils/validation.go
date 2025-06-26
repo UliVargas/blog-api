@@ -2,11 +2,25 @@ package utils
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/go-playground/validator/v10"
 )
 
-// ValidationErrorResponse representa la estructura de respuesta para errores de validación
+var (
+	validatorInstance *validator.Validate
+	once              sync.Once
+)
+
+// GetValidator devuelve una instancia del validador
+func GetValidator() *validator.Validate {
+	once.Do(func() {
+		validatorInstance = validator.New()
+	})
+	return validatorInstance
+}
+
+// ValidationErrorResponse representa la estructura de respuesta para errores de validació
 type ValidationErrorResponse struct {
 	Error  string            `json:"error"`
 	Errors map[string]string `json:"errors"`

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/UliVargas/blog-go/internal/models"
+	"github.com/UliVargas/blog-go/pkg/errors"
 	"gorm.io/gorm"
 )
 
@@ -16,31 +17,50 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 func (r *UserRepository) GetAll() ([]models.User, error) {
 	var users []models.User
 	err := r.db.Find(&users).Error
-	return users, err
+	if err != nil {
+		return nil, errors.WrapDatabaseError(err)
+	}
+	return users, nil
 }
 
 func (r *UserRepository) GetByID(id uint) (models.User, error) {
 	var user models.User
 	err := r.db.First(&user, id).Error
-	return user, err
+	if err != nil {
+		return models.User{}, errors.WrapDatabaseError(err)
+	}
+	return user, nil
 }
 
 func (r *UserRepository) GetByEmail(email string) (models.User, error) {
 	var user models.User
-	err := r.db.Where("email =?", email).First(&user).Error
-	return user, err
+	err := r.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return models.User{}, errors.WrapDatabaseError(err)
+	}
+	return user, nil
 }
 
 func (r *UserRepository) Create(user models.User) error {
-	return r.db.Create(&user).Error
+	err := r.db.Create(&user).Error
+	if err != nil {
+		return errors.WrapDatabaseError(err)
+	}
+	return nil
 }
 
 func (r *UserRepository) Update(user models.User) (models.User, error) {
 	err := r.db.Save(&user).Error
-	return user, err
+	if err != nil {
+		return models.User{}, errors.WrapDatabaseError(err)
+	}
+	return user, nil
 }
 
 func (r *UserRepository) Delete(id uint) error {
 	err := r.db.Delete(&models.User{}, id).Error
-	return err
+	if err != nil {
+		return errors.WrapDatabaseError(err)
+	}
+	return nil
 }
